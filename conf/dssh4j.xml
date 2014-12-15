@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pssh4j>
+    <!-- 
+    host有四个子元素：
+        address：主机的名称或IP地址。
+        port：主机端口。
+        user：登陆主机的用户名。
+        password：登陆主机的密码。
+     -->
+    <host name="st-101">
+        <address>192.168.56.101</address>
+        <port>6622</port>
+        <user>nieyong</user>
+        <password>nieyong123456</password>
+    </host>
+    <host name="st-102">
+        <address>192.168.56.102</address>
+        <port>6622</port>
+        <user>nieyong</user>
+        <password>nieyong654321</password>
+    </host>
+    <host name="sh-201">
+        <address>192.168.56.201</address>
+        <port>6622</port>
+        <user>aofeng</user>
+        <password>aofeng123456</password>
+    </host>
+    <host name="sh-202">
+        <address>192.168.56.202</address>
+        <port>6622</port>
+        <user>aofeng</user>
+        <password>aofeng654321</password>
+    </host>
+    
+    <!-- group下面可以有一个或多个host子元素（其值为单个主机的name属性的值）。 -->
+    <group name="account-st">
+        <host>st-101</host>
+        <host>st-102</host>
+    </group>
+    <group name="account-sh">
+        <host>sh-201</host>
+        <host>sh-202</host>
+    </group>
+
+</pssh4j>
