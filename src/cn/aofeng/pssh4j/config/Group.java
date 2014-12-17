@@ -2,6 +2,7 @@ package cn.aofeng.pssh4j.config;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -11,13 +12,13 @@ import java.util.Set;
  */
 public class Group implements Serializable, Cloneable {
 
-    private static final long serialVersionUID = 4820452167212332938L;
+    private static final long serialVersionUID = 8777149011045000148L;
     
-    private String _groupName;
+    private String _name;
     private Set<String> _hosts = new HashSet<String>();
     
-    public Group(String groupName) {
-        _groupName = groupName;
+    public Group(String name) {
+        _name = name;
     }
     
     /**
@@ -26,7 +27,7 @@ public class Group implements Serializable, Cloneable {
      * @return 组名称。
      */
     public String getName() {
-        return _groupName;
+        return _name;
     }
     
     /**
@@ -50,13 +51,31 @@ public class Group implements Serializable, Cloneable {
     public boolean constains(String hostName) {
         return _hosts.contains(hostName);
     }
+    
+    /**
+     * 获取当前组所属的主机数量。
+     * 
+     * @return 当前组所属的主机数量。
+     */
+    public int getHostCount() {
+        return _hosts.size();
+    }
+    
+    /**
+     * 获取主机名称列表的迭代器。
+     * 
+     * @return 主机名称列表的迭代器。
+     */
+    public synchronized Iterator<String> iterator() {
+        return _hosts.iterator();
+    }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result
-                + ((_groupName == null) ? 0 : _groupName.hashCode());
+                + ((_name == null) ? 0 : _name.hashCode());
         
         return result;
     }
@@ -73,11 +92,11 @@ public class Group implements Serializable, Cloneable {
             return false;
         }
         Group other = (Group) obj;
-        if (_groupName == null) {
-            if (other._groupName != null) {
+        if (_name == null) {
+            if (other._name != null) {
                 return false;
             }
-        } else if (!_groupName.equals(other._groupName)) {
+        } else if (!_name.equals(other._name)) {
             return false;
         }
         
@@ -86,7 +105,7 @@ public class Group implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return "Group [groupName=" + _groupName + ", hosts=" + _hosts + "]";
+        return "Group [name=" + _name + ", hosts=" + _hosts + "]";
     }
 
     
