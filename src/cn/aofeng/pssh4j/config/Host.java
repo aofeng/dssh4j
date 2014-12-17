@@ -9,8 +9,13 @@ import java.io.Serializable;
  */
 public class Host implements Serializable, Cloneable {
 
-    private static final long serialVersionUID = 5724074141513284083L;
+    private static final long serialVersionUID = 1014861600634195011L;
 
+    /**
+     * 主机名称。
+     */
+    private String name;
+    
     /**
      * 地址。
      */
@@ -19,7 +24,7 @@ public class Host implements Serializable, Cloneable {
     /**
      * 监听端口。
      */
-    private int host;
+    private int port;
     
     /**
      * 登陆的用户名。
@@ -31,6 +36,18 @@ public class Host implements Serializable, Cloneable {
      */
     private String password;
 
+    public Host(String name) {
+        this.name = name;
+    }
+    
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getAddress() {
         return address;
     }
@@ -39,12 +56,12 @@ public class Host implements Serializable, Cloneable {
         this.address = address;
     }
 
-    public int getHost() {
-        return host;
+    public int getPort() {
+        return port;
     }
 
-    public void setHost(int host) {
-        this.host = host;
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public String getUser() {
@@ -67,11 +84,10 @@ public class Host implements Serializable, Cloneable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((address == null) ? 0 : address.hashCode());
-        result = prime * result + host;
-        result = prime * result
-                + ((password == null) ? 0 : password.hashCode());
-        result = prime * result + ((user == null) ? 0 : user.hashCode());
+        result = prime * result + port;
+        
         return result;
     }
 
@@ -86,7 +102,15 @@ public class Host implements Serializable, Cloneable {
         if (!(obj instanceof Host)) {
             return false;
         }
+        
         Host other = (Host) obj;
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
         if (address == null) {
             if (other.address != null) {
                 return false;
@@ -94,33 +118,19 @@ public class Host implements Serializable, Cloneable {
         } else if (!address.equals(other.address)) {
             return false;
         }
-        if (host != other.host) {
+        if (port != other.port) {
             return false;
         }
-        if (password == null) {
-            if (other.password != null) {
-                return false;
-            }
-        } else if (!password.equals(other.password)) {
-            return false;
-        }
-        if (user == null) {
-            if (other.user != null) {
-                return false;
-            }
-        } else if (!user.equals(other.user)) {
-            return false;
-        }
+        
         return true;
     }
 
     @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder(128)
-            .append("Host [address=").append(address)
-            .append(", host=").append(host)
-            .append(", user=").append(user)
-            .append(", password=").append(password)
+            .append("Host [name=").append(name)
+            .append(", address=").append(address)
+            .append(", port=").append(port)
             .append("]");
         
         return  buffer.toString();
