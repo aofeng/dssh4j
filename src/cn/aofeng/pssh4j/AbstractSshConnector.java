@@ -22,6 +22,11 @@ public abstract class AbstractSshConnector {
     protected abstract void run(Session session, Host host) throws Exception; 
     
     public void execute(Host host) {
+        if (null == host) {
+            _logger.error("invalid host information:null");
+            return;
+        }
+        
         JSch jsch = new JSch();
         Session session  = null;
         try {
