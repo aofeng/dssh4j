@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class Group implements Serializable, Cloneable {
 
-    private static final long serialVersionUID = 8777149011045000148L;
+    private static final long serialVersionUID = -5329578453559670222L;
     
     private String _name;
     private Set<String> _hosts = new HashSet<String>();
@@ -68,6 +68,18 @@ public class Group implements Serializable, Cloneable {
      */
     public synchronized Iterator<String> iterator() {
         return _hosts.iterator();
+    }
+    
+    /**
+     * 获取主机名称数组。
+     * 
+     * @return 主机名称数组。
+     */
+    public synchronized String[] toArray() {
+        String[] result = new String[_hosts.size()];
+        _hosts.toArray(result);
+        
+        return result;
     }
 
     @Override

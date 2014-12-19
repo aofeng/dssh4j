@@ -1,6 +1,5 @@
 package cn.aofeng.pssh4j;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -99,11 +98,8 @@ public class Dssh {
                 if (StringUtil.isBlank(groupName)) {
                     continue;
                 }
-                Iterator<String> hostNames = config.getGroup(groupName).iterator();
-                while (hostNames.hasNext()) {
-                    String hostName = hostNames.next();
-                    hostList.add( config.getHost(hostName) );
-                }
+                String[] hostNames = config.getGroup(groupName).toArray();
+                hostList.addAll( findHostList(hostNames, config) );
             }
         }
         
@@ -111,11 +107,23 @@ public class Dssh {
         String hostArgs = cl.getOptionValue(Command.HOST);
         if (! StringUtil.isBlank(hostArgs)) {
             String[] hostNames =  hostArgs.split(",\\|，");
-            for (String hostName : hostNames) {
-                if (StringUtil.isBlank(hostName)) {
-                    continue;
-                }
-                hostList.add( config.getHost(hostName) );
+            hostList.addAll( findHostList(hostNames, config) );
+        }
+        
+        return hostList;
+    }
+
+    private static List<Host> findHostList(String[] hostNames, Config config) {
+        List<Host> hostList = new LinkedList<Host>();
+        for (String hostName : hostNames) {
+            if (StringUtil.isBlank(hostName)) {
+                continue;
+            }
+            Host host = config.getHost(hostName);
+            if (null != host) {
+                hostList.add(host);
+            } else {
+                _logger.error( String.format("host %s not exists", hostName) );
             }
         }
         
