@@ -3,6 +3,7 @@
     <property name="project_version" value="1.0.0"></property>
     <property name="package_name" value="${project_name}-${project_version}"></property>
     <property name="src_dir" value="${basedir}/src"></property>
+	<property name="conf_dir" value="${basedir}/conf"></property>
     <property name="lib_dir" value="${basedir}/lib"></property>
     <property name="build_dir" value="${basedir}/temp"></property>
     <property name="dist_dir" value="${basedir}/dist"></property>
@@ -56,6 +57,27 @@
         </jar>
     </target>
 
+	<target name="run_jar" depends="clean, prepare, compile ">
+	        <jar destfile="${dist_dir}/${package_name}.jar">
+	            <manifest>
+	                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+	                <attribute name="Rsrc-Main-Class" value="cn.aofeng.pssh4j.Dssh"/>
+	                <attribute name="Class-Path" value="."/>
+	                <attribute name="Rsrc-Class-Path" value="./ log4j-1.2.16.jar common4j-0.2.1.jar jsch-0.1.51.jar commons-cli-1.2.jar"/>
+	            </manifest>
+	            <zipfileset src="jar-in-jar-loader.zip"/>
+	            <fileset dir="${build_dir}/${package_name}"/>
+	        	<fileset dir="${conf_dir}">
+	        		<include name="log4j.dtd"/>
+	        		<include name="log4j.xml" />
+	        	</fileset>
+	            <zipfileset dir="${lib_dir}" includes="log4j-1.2.16.jar"/>
+	            <zipfileset dir="${lib_dir}" includes="common4j-0.2.1.jar"/>
+	            <zipfileset dir="${lib_dir}" includes="jsch-0.1.51.jar"/>
+	            <zipfileset dir="${lib_dir}" includes="commons-cli-1.2.jar"/>
+	        </jar>
+	    </target>
+	
     <target name="all" depends="clean, prepare, compile, jar, jar-src">
     </target>
 </project>
