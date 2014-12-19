@@ -37,12 +37,19 @@ public class ConfigLoader implements ILifeCycle {
         return _instance;
     }
     
+    public Config getConfig() {
+        return _config;
+    }
+    
     @Override
     public void init() {
         if (_isStarted.get()) {
             return;
         }
         
+        if (_logger.isDebugEnabled()) {
+            _logger.debug( String.format("starting load config file: %s", _configFile) );
+        }
         Document document = DomUtil.createDocument(_configFile);
         Element rootNode = document.getDocumentElement();
         NodeParser rootParser = new NodeParser(rootNode);
@@ -68,13 +75,15 @@ public class ConfigLoader implements ILifeCycle {
         
         _isStarted.set(true);
         
-        Iterator<Host> hostIterator = _config.hostIterator();
-        while (hostIterator.hasNext()) {
-            _logger.info(hostIterator.next());
-        }
-        Iterator<Group> groupIterator =  _config.groupIterator();
-        while (groupIterator.hasNext()) {
-            _logger.info(groupIterator.next());
+        if (_logger.isDebugEnabled()) {
+            Iterator<Host> hostIterator = _config.hostIterator();
+            while (hostIterator.hasNext()) {
+                _logger.debug(hostIterator.next());
+            }
+            Iterator<Group> groupIterator =  _config.groupIterator();
+            while (groupIterator.hasNext()) {
+                _logger.debug(groupIterator.next());
+            }
         }
     }
     
