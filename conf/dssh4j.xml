@@ -31,6 +31,12 @@
         <user>aofeng</user>
         <password>aofeng654321</password>
     </host>
+    <host name="dev-redhat1">
+        <address>192.168.56.102</address>
+        <port>22</port>
+        <user>nieyong</user>
+        <password>ny1234%^&amp;*</password>
+    </host>
     
     <!-- group下面可以有一个或多个host子元素（其值为单个主机的name属性的值）。 -->
     <group name="account-st">
@@ -40,6 +46,9 @@
     <group name="account-sh">
         <host>sh-201</host>
         <host>sh-202</host>
+    </group>
+    <group name="dev">
+        <host>dev-redhat</host>
     </group>
 
 </pssh4j>

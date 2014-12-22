@@ -24,7 +24,7 @@ import com.jcraft.jsch.SftpException;
  */
 public class SftpDownloader extends AbstractSshConnector {
 
-private final static Logger _logger = Logger.getLogger(SftpDownloader.class);
+    private final static Logger _logger = Logger.getLogger(SftpDownloader.class);
     
     private String _localPath;
     

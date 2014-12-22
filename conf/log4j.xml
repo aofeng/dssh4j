@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration>
-	<appender name="dssh4j"
-		class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="logs/dssh4j.log" />
+	<appender name="dssh4j" class="org.apache.log4j.ConsoleAppender">
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern"
-				value="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %m%n" />
-			<!--
-			value="%d %-5p [%t] %C{2} (%F:%L) - %m%n
-			value="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%t] %C{2} (%F:%L) - %m%n
-			-->
+			<param name="ConversionPattern" value="%m%n" />
 		</layout>
 	</appender>
     
