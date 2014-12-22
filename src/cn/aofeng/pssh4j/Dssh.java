@@ -73,6 +73,13 @@ public class Dssh {
                 // 使用SFTP上传文件
                 String localFile = cl.getOptionValue(Command.SFTP_LOCAL_FILE);
                 String remoteFile = cl.getOptionValue(Command.SFTP_REMOTE_FILE);
+                SftpUploader executor = new SftpUploader();
+                List<Host> hostList = obtainHostList(cl);
+                for (Host host : hostList) {
+                    executor.setLocalPath(localFile+"."+host.getName());
+                    executor.setRemotePath(remoteFile);
+                    executor.execute(host);
+                }
             }  else if ( Command.OPERATE_SFTP_DOWN.equals(opVal) ) {
                 // 使用SFTP下载文件
                 String localFile = cl.getOptionValue(Command.SFTP_LOCAL_FILE);
