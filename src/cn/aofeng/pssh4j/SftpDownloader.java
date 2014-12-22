@@ -10,21 +10,21 @@ import org.apache.log4j.Logger;
 
 import cn.aofeng.common4j.io.IOUtil;
 import cn.aofeng.pssh4j.config.Host;
+import cn.aofeng.pssh4j.progress.SftpProgressMonitorImpl;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
-import com.jcraft.jsch.SftpProgressMonitor;
 
 /**
- * SFTP上传文件。
+ * SFTP下载文件。
  * 
  * @author <a href="mailto:aofengblog@163.com">聂勇</a>
  */
 public class SftpDownloader extends AbstractSshConnector {
 
-private final static Logger logger = Logger.getLogger(SftpDownloader.class);
+private final static Logger _logger = Logger.getLogger(SftpDownloader.class);
     
     private String _localPath;
     
@@ -47,38 +47,15 @@ private final static Logger logger = Logger.getLogger(SftpDownloader.class);
             channel.connect(5000);
             outs = new BufferedOutputStream(new FileOutputStream(
                     new File(_localPath)));
-            channel.get(_remotePath, outs, new SftpProgressMonitor() {
-
-                ConsoleProgressBar progress = null;
-
-                private long current = 0;
-
-                @Override
-                public void init(int op, String src, String dest, long max) {
-                    progress = new ConsoleProgressBar(0, max, 50);
-                }
-
-                @Override
-                public void end() {
-                    if (logger.isInfoEnabled()) {
-                        logger.debug(String.format("download file:%s complete", _remotePath));
-                    }
-                }
-
-                @Override
-                public boolean count(long count) {
-                    current += count;
-                    progress.show(current);
-
-                    return true;
-                }
-            });
+            SftpProgressMonitorImpl monitor = new SftpProgressMonitorImpl();
+            monitor.setCompleteTips( String.format("download file:%s complete", _remotePath) );
+            channel.get(_remotePath, outs, monitor);
         } catch (JSchException e) {
-            logger.error( String.format("connect machine %s[%s:%d] occurs error", host.getName(), host.getAddress(), host.getPort()), e);
+            _logger.error( String.format("connect machine %s[%s:%d] occurs error", host.getName(), host.getAddress(), host.getPort()), e);
         } catch (SftpException e) {
-            logger.error( String.format("get remote file:%s occurs error", _remotePath), e);
+            _logger.error( String.format("download file:%s occurs error", _remotePath), e);
         } catch (FileNotFoundException e) {
-            logger.error( String.format("can not find local file:%s", _localPath), e);
+            _logger.error( String.format("can not find local file:%s", _localPath), e);
         } finally {
             IOUtil.closeQuietly(outs);
             if (null != channel) {

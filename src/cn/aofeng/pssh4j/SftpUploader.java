@@ -1,5 +1,6 @@
 package cn.aofeng.pssh4j;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,12 +10,12 @@ import org.apache.log4j.Logger;
 
 import cn.aofeng.common4j.io.IOUtil;
 import cn.aofeng.pssh4j.config.Host;
+import cn.aofeng.pssh4j.progress.SftpProgressMonitorImpl;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
-import com.jcraft.jsch.SftpProgressMonitor;
 
 /**
  * SFTP上传文件。
@@ -44,37 +45,15 @@ public class SftpUploader extends AbstractSshConnector {
         try {
             channel = (ChannelSftp) session.openChannel("sftp");
             channel.connect(5000);
-            ins = new FileInputStream(new File(_localPath));
-            channel.put(ins, _remotePath, new SftpProgressMonitor() {
-                
-                ConsoleProgressBar progress = null;
-                
-                private long current = 0;
-                
-                @Override
-                public void init(int op, String src, String dest, long max) {
-                    progress = new ConsoleProgressBar(0, max, 50);
-                }
-                
-                @Override
-                public boolean count(long count) {
-                    current += count;
-                    progress.show(current);
-
-                    return true;
-                }
-                
-                @Override
-                public void end() {
-                    if (_logger.isInfoEnabled()) {
-                        _logger.debug(String.format("download file:%s complete", _remotePath));
-                    }
-                }
-            });
+            ins = new BufferedInputStream(new FileInputStream(
+                    new File(_localPath)));
+            SftpProgressMonitorImpl monitor = new SftpProgressMonitorImpl();
+            monitor.setCompleteTips( String.format("upload file:%s complete", _localPath) );
+            channel.put(ins, _remotePath, monitor);
         } catch (JSchException e) {
             _logger.error( String.format("connect machine %s[%s:%d] occurs error", host.getName(), host.getAddress(), host.getPort()), e);
         } catch (SftpException e) {
-            _logger.error( String.format("get remote file:%s occurs error", _remotePath), e);
+            _logger.error( String.format("upload file:%s occurs error", _remotePath), e);
         } catch (FileNotFoundException e) {
             _logger.error( String.format("can not find local file:%s", _localPath), e);
         } finally {
