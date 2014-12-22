@@ -77,6 +77,13 @@ public class Dssh {
                 // 使用SFTP下载文件
                 String localFile = cl.getOptionValue(Command.SFTP_LOCAL_FILE);
                 String remoteFile = cl.getOptionValue(Command.SFTP_REMOTE_FILE);
+                SftpDownloader executor = new SftpDownloader();
+                List<Host> hostList = obtainHostList(cl);
+                for (Host host : hostList) {
+                    executor.setLocalPath(localFile+"."+host.getName());
+                    executor.setRemotePath(remoteFile);
+                    executor.execute(host);
+                }
             } else {
                 printHelpMsg(options, hf);
             }
@@ -90,7 +97,7 @@ public class Dssh {
         
         Config config = ConfigLoader.getInstance().getConfig();
         
-        // 所有指定的组的主机
+        // 指定组的所有主机
         String groupArgs = cl.getOptionValue(Command.GROUP);
         if (! StringUtil.isBlank(groupArgs)) {
             String[] groupNames = groupArgs.split(",\\|，");
@@ -103,7 +110,7 @@ public class Dssh {
             }
         }
         
-        // 所有指定的单独的主机
+        // 单独指定的所有主机
         String hostArgs = cl.getOptionValue(Command.HOST);
         if (! StringUtil.isBlank(hostArgs)) {
             String[] hostNames =  hostArgs.split(",\\|，");
