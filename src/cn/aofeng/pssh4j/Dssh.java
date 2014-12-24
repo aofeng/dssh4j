@@ -65,7 +65,7 @@ public class Dssh {
                 String cmd = cl.getOptionValue(Command.OPERATE_CMD);
                 CommandExecutor executor = new CommandExecutor();
                 executor.setCommands( new String[]{cmd} );
-                List<Host> hostList = obtainHostList(cl);
+                List<Host> hostList = findHostListByArgs(cl);
                 for (Host host : hostList) {
                     executor.execute(host);
                 }
@@ -73,24 +73,14 @@ public class Dssh {
                 // 使用SFTP上传文件
                 String localFile = cl.getOptionValue(Command.SFTP_LOCAL_FILE);
                 String remoteFile = cl.getOptionValue(Command.SFTP_REMOTE_FILE);
-                SftpUploader executor = new SftpUploader();
-                List<Host> hostList = obtainHostList(cl);
-                for (Host host : hostList) {
-                    executor.setLocalPath(localFile+"."+host.getName());
-                    executor.setRemotePath(remoteFile);
-                    executor.execute(host);
-                }
+                AbstractSftpExecutor executor = new SftpUploader();
+                executeSftp(cl, localFile, remoteFile, executor);
             }  else if ( Command.OPERATE_SFTP_DOWN.equals(opVal) ) {
                 // 使用SFTP下载文件
                 String localFile = cl.getOptionValue(Command.SFTP_LOCAL_FILE);
                 String remoteFile = cl.getOptionValue(Command.SFTP_REMOTE_FILE);
-                SftpDownloader executor = new SftpDownloader();
-                List<Host> hostList = obtainHostList(cl);
-                for (Host host : hostList) {
-                    executor.setLocalPath(localFile+"."+host.getName());
-                    executor.setRemotePath(remoteFile);
-                    executor.execute(host);
-                }
+                AbstractSftpExecutor executor = new SftpDownloader();
+                executeSftp(cl, localFile, remoteFile, executor);
             } else {
                 printHelpMsg(options, hf);
             }
@@ -99,7 +89,25 @@ public class Dssh {
         ConfigLoader.getInstance().destroy();
     }
 
-    private static List<Host> obtainHostList(CommandLine cl) {
+    private static void executeSftp(CommandLine cl, String localFile,
+            String remoteFile, AbstractSftpExecutor executor) {
+        List<Host> hostList = findHostListByArgs(cl);
+        for (Host host : hostList) {
+            executor.setLocalPath(localFile);
+            executor.setRemotePath(remoteFile);
+            executor.execute(host);
+        }
+    }
+
+    /**
+     * 解析输入的参数，获取对应的{@link Host}实例列表。
+     * 
+     * @param cl {@link CommandLine}实例
+     * @return {@link Host}列表
+     * 
+     * @see #findHostListByName(String[], Config)
+     */
+    private static List<Host> findHostListByArgs(CommandLine cl) {
         List<Host> hostList = new LinkedList<Host>();
         
         Config config = ConfigLoader.getInstance().getConfig();
@@ -113,7 +121,7 @@ public class Dssh {
                     continue;
                 }
                 String[] hostNames = config.getGroup(groupName).toArray();
-                hostList.addAll( findHostList(hostNames, config) );
+                hostList.addAll( findHostListByName(hostNames, config) );
             }
         }
         
@@ -121,13 +129,20 @@ public class Dssh {
         String hostArgs = cl.getOptionValue(Command.HOST);
         if (! StringUtil.isBlank(hostArgs)) {
             String[] hostNames =  hostArgs.split(",\\|，");
-            hostList.addAll( findHostList(hostNames, config) );
+            hostList.addAll( findHostListByName(hostNames, config) );
         }
         
         return hostList;
     }
 
-    private static List<Host> findHostList(String[] hostNames, Config config) {
+    /**
+     * 根据主机名称列表获取对应的{@link Host}实例列表。
+     * 
+     * @param hostNames 主机名称数组
+     * @param config 解析dssh4j.xml后存储在内存的数据结构
+     * @return {@link Host}列表
+     */
+    private static List<Host> findHostListByName(String[] hostNames, Config config) {
         List<Host> hostList = new LinkedList<Host>();
         for (String hostName : hostNames) {
             if (StringUtil.isBlank(hostName)) {
@@ -152,8 +167,8 @@ public class Dssh {
         options.addOption( OptionBuilder.withArgName("host").hasArg().withDescription("one or more host name").create(Command.HOST) );
         options.addOption( OptionBuilder.withArgName("cmd | up | down").isRequired().hasArg().withDescription("operate type").create(Command.OPERATE) );
         options.addOption( OptionBuilder.withArgName("command").hasArg().withDescription("execute command on remote machine").create(Command.OPERATE_CMD) );
-        options.addOption( OptionBuilder.withArgName("local file").hasArg().withDescription("download file from remote to local via sftp").create(Command.SFTP_LOCAL_FILE) );
-        options.addOption( OptionBuilder.withArgName("remote file").hasArg().withDescription("download file from remote to local via sftp").create(Command.SFTP_REMOTE_FILE) );
+        options.addOption( OptionBuilder.withArgName("local file").hasArg().withDescription("the local file's absolute path").create(Command.SFTP_LOCAL_FILE) );
+        options.addOption( OptionBuilder.withArgName("remote file").hasArg().withDescription("the remote file's absolute path").create(Command.SFTP_REMOTE_FILE) );
         
         return options;
     }
