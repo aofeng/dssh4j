@@ -22,31 +22,22 @@ import com.jcraft.jsch.SftpException;
  * 
  * @author <a href="mailto:aofengblog@163.com">聂勇</a>
  */
-public class SftpDownloader extends AbstractSshConnector {
+public class SftpDownloader extends AbstractSftpExecutor {
 
     private final static Logger _logger = Logger.getLogger(SftpDownloader.class);
     
-    private String _localPath;
-    
-    private String _remotePath;
-    
-    public void setLocalPath(String localPath) {
-        _localPath = localPath;
-    }
-
-    public void setRemotePath(String remotePath) {
-        _remotePath = remotePath;
-    }
-    
     @Override
     protected void run(Session session, Host host) throws Exception {
+        _logger.info( String.format("%s[%s:%d], download file:%s", 
+                host.getName(), host.getAddress(), host.getPort(), _remotePath) );
+        
         ChannelSftp channel = null;
         OutputStream outs = null;
         try {
             channel = (ChannelSftp) session.openChannel("sftp");
             channel.connect(5000);
             outs = new BufferedOutputStream(new FileOutputStream(
-                    new File(_localPath)));
+                    new File(_localPath+"."+host.getName())));
             SftpProgressMonitorImpl monitor = new SftpProgressMonitorImpl();
             monitor.setCompleteTips( String.format("download file:%s complete", _remotePath) );
             channel.get(_remotePath, outs, monitor);

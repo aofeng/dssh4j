@@ -22,24 +22,15 @@ import com.jcraft.jsch.SftpException;
  * 
  * @author <a href="mailto:aofengblog@163.com">聂勇</a>
  */
-public class SftpUploader extends AbstractSshConnector {
+public class SftpUploader extends AbstractSftpExecutor {
 
     private static Logger _logger = Logger.getLogger(SftpUploader.class);
     
-    private String _localPath;
-    
-    private String _remotePath;
-    
-    public void setLocalPath(String localPath) {
-        _localPath = localPath;
-    }
-
-    public void setRemotePath(String remotePath) {
-        _remotePath = remotePath;
-    }
-    
     @Override
     protected void run(Session session, Host host) throws Exception {
+        _logger.info( String.format("%s[%s:%d], upload file:%s", 
+                host.getName(), host.getAddress(), host.getPort(), _localPath) );
+        
         ChannelSftp channel = null;
         InputStream ins = null;
         try {
