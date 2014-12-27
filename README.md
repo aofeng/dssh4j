@@ -63,5 +63,5 @@ java -jar dssh4j-1.0.0.jar -group "account-sh" -op up -local /home/aofeng/stat.a
 
 3、-group参数和-host参数混用。
 ```shell
-java -jar dssh4j-1.0.0.jar -group "account-sh" -host "st-101" -op down -local /home/aofeng/stat.awk -remote /home/nieyong/stat.awk
+java -jar dssh4j-1.0.0.jar -group "account-sh" -host "st-101" -op up -local /home/aofeng/stat.awk -remote /home/nieyong/stat.awk
 ```
